@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+
+  # Database untuk servis auth
+  auth-db:
+    image: mysql:8.0
+    container_name: auth-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE : auth_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - auth_db_data:/var/lib/mysql
+  
+  # Database untuk servis booking
+  booking-db:
+    image: mysql:8.0
+    container_name: booking_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: booking_db
+    ports:
+      - "3308:3306"
+    volumes:
+      - booking_db_data:/var/lib/mysql
+  
+  # Database untuk servis field
+  field-db:
+    image: mysql:8.0
+    container_name: field_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: field_db
+    ports:
+      - "3309:3306"
+    volumes:
+      - field_db_data:/var/lib/mysql
+  
+  # Servis auth
+  auth-service:
+    build: ./services/auth-service
+    container_name: auth_service
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: auth-db
+      DB_PORT: 3306
+      DB_NAME: auth_db
+      DB_USER: root
+      DB_PASS: root123
+      JWT_SECRET: rahasia_jwt_super_aman_2024
+      JWT_EXPIRES_IN: 15m
+      REFRESH_SECRET: rahasia_refresh_super_aman_2024
+      REFRESH_EXPIRES_IN: 7d
+      GITHUB_CLIENT_ID: ISI_NANTI
+      GITHUB_CLIENT_SECRET: ISI_NANTI
+      GITHUB_CALLBACK_URL: http://localhost:3001/auth/github/callback
+    depends_on:
+      - auth-db
+  
+  # Servis field
+  field-service:
+    build: ./services/field-service
+    container_name: field_service
+    restart: always
+    ports:
+      - "3002:3002"
+    environment:
+      DB_HOST: field-db
+      DB_PORT: 3306
+      DB_NAME: field_db
+      DB_USER: root
+      DB_PASS: root123
+      AUTH_SERVICE_URL: http://auth-service:3001
+    depends_on:
+      - field-db
+  
+  # Servis booking
+  booking-service:
+    build: ./services/booking-service
+    container_name: booking_service
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: booking-db
+      DB_PORT: 3306
+      DB_NAME: booking_db
+      DB_USER: root
+      DB_PASS: root123
+      AUTH_SERVICE_URL: http://auth-service:3001
+      FIELD_SERVICE_URL: http://field-service:3002
+    depends_on:
+      - booking-db
+
+  # Gateway
+  gateway:
+    build: ./gateway
+    container_name: api_gateway
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:3001
+      BOOKING_SERVICE_URL: http://booking-service:8080
+      FIELD_SERVICE_URL: http://field-service:3002
+      JWT_SECRET: rahasia_jwt_super_aman_2024
+    depends_on:
+      - auth-service
+      - booking-service
+      - field-service
+
+
+volumes:
+  auth_db_data:
+  booking_db_data:
+  field_db_data:
