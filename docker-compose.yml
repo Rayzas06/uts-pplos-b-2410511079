@@ -1,47 +1,46 @@
 version: '3.8'
 
 services:
-
-  # Database untuk servis auth
+  # ── Database auth 
   auth-db:
     image: mysql:8.0
-    container_name: auth-db
+    container_name: auth_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE : auth_db
+      MYSQL_ROOT_PASSWORD: niel151206
+      MYSQL_DATABASE: auth_db
     ports:
       - "3307:3306"
     volumes:
       - auth_db_data:/var/lib/mysql
-  
-  # Database untuk servis booking
+
+  # ── Database booking 
   booking-db:
     image: mysql:8.0
     container_name: booking_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_ROOT_PASSWORD: niel151206
       MYSQL_DATABASE: booking_db
     ports:
       - "3308:3306"
     volumes:
       - booking_db_data:/var/lib/mysql
-  
-  # Database untuk servis field
+
+  # ── Database field 
   field-db:
     image: mysql:8.0
     container_name: field_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_ROOT_PASSWORD: niel151206
       MYSQL_DATABASE: field_db
     ports:
       - "3309:3306"
     volumes:
       - field_db_data:/var/lib/mysql
-  
-  # Servis auth
+
+  # ── Auth Service 
   auth-service:
     build: ./services/auth-service
     container_name: auth_service
@@ -53,18 +52,18 @@ services:
       DB_PORT: 3306
       DB_NAME: auth_db
       DB_USER: root
-      DB_PASS: root123
+      DB_PASS: niel151206
       JWT_SECRET: rahasia_jwt_super_aman_2024
       JWT_EXPIRES_IN: 15m
       REFRESH_SECRET: rahasia_refresh_super_aman_2024
       REFRESH_EXPIRES_IN: 7d
-      GITHUB_CLIENT_ID: ISI_NANTI
-      GITHUB_CLIENT_SECRET: ISI_NANTI
+      GITHUB_CLIENT_ID: Ov23limaePpixb1l41UE
+      GITHUB_CLIENT_SECRET: f3d01e0ded3f65e63afa099369bc71ad4b4d5bfb
       GITHUB_CALLBACK_URL: http://localhost:3001/auth/github/callback
     depends_on:
       - auth-db
-  
-  # Servis field
+
+  # ── Field Service 
   field-service:
     build: ./services/field-service
     container_name: field_service
@@ -76,12 +75,12 @@ services:
       DB_PORT: 3306
       DB_NAME: field_db
       DB_USER: root
-      DB_PASS: root123
+      DB_PASS: niel151206
       AUTH_SERVICE_URL: http://auth-service:3001
     depends_on:
       - field-db
-  
-  # Servis booking
+
+  # ── Booking Service 
   booking-service:
     build: ./services/booking-service
     container_name: booking_service
@@ -93,13 +92,13 @@ services:
       DB_PORT: 3306
       DB_NAME: booking_db
       DB_USER: root
-      DB_PASS: root123
+      DB_PASS: niel151206
       AUTH_SERVICE_URL: http://auth-service:3001
       FIELD_SERVICE_URL: http://field-service:3002
     depends_on:
       - booking-db
 
-  # Gateway
+  # ── API Gateway 
   gateway:
     build: ./gateway
     container_name: api_gateway
@@ -115,7 +114,6 @@ services:
       - auth-service
       - booking-service
       - field-service
-
 
 volumes:
   auth_db_data:
