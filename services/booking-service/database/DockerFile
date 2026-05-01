@@ -1,0 +1,13 @@
+FROM php:8.2-cli
+WORKDIR /app
+RUN apt-get update && apt-get install -y curl zip unzip git \
+    && curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer
+RUN docker-php-ext-install pdo pdo_mysql
+COPY composer*.json ./
+RUN composer install --no-dev --optimize-autoloader
+COPY . .
+RUN php artisan config:cache
+RUN php artisan migrate --force || true
+EXPOSE 8080
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"]
