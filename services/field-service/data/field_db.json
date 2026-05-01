@@ -1,0 +1,59 @@
+{
+  "fields": [
+    {
+      "id": 1,
+      "jenis": "Lapangan Futsal A",
+      "type": "futsal",
+      "harga_per_jam": 150000,
+      "harga_per_jam_fmt": "Rp 150.000",
+      "fasilitas": [
+        "parkir",
+        "Kantin",
+        "Kamar Mandi",
+        "Ruang ganti"
+      ],
+      "jam_operasional": {
+        "buka": "07:00",
+        "tutup": "22:00"
+      }
+    },
+    {
+      "id": 2,
+      "jenis": "Lapangan Badminton B",
+      "type": "badminton",
+      "harga_per_jam": 75000,
+      "harga_per_jam_fmt": "Rp 75.000",
+      "fasilitas": [
+        "parkir",
+        "Toilet",
+        "AC"
+      ],
+      "jam_operasional": {
+        "buka": "06:00",
+        "tutup": "22:00"
+      }
+    },
+    {
+      "id": 3,
+      "jenis": "Lapangan Basket C",
+      "type": "basketball",
+      "harga_per_jam": 200000,
+      "harga_per_jam_fmt": "Rp 200.000",
+      "fasilitas": [
+        "parkir",
+        "Kantin",
+        "Toilet",
+        "Tribun"
+      ],
+      "jam_operasional": {
+        "buka": "08:00",
+        "tutup": "21:00"
+      }
+    }
+  ],
+  "slots": [],
+  "field_owners": [],
+  "nextFieldId": 4,
+  "nextSlotId": 1,
+  "nextOwnerId": 1
+}

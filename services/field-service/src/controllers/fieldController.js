@@ -25,11 +25,11 @@ const getFieldById = async (req, res) => {
   try {
     const field = await FieldModel.findById(req.params.id);
     if (!field) {
-      return res.status(404).json({ success: false, message: 'Lapangan tidak dapat ditemukan.' });
+      return res.status(404).json({ success: false, message: 'Lapangan tidak ditemukan.' });
     }
     return res.status(200).json({ success: true, data: field });
   } catch (err) {
-    return res.status(500).json({ success: false, message: 'Server mengalami error.' });
+    return res.status(500).json({ success: false, message: 'Server error.' });
   }
 };
 
@@ -41,7 +41,7 @@ const createField = async (req, res) => {
     if (!name || !type || !location || !price_per_hour) {
       return res.status(422).json({
         success: false,
-        message: 'name, type, location, dan price_per_hour(harga perjam)wajib diisi.'
+        message: 'name, type, location, dan price_per_hour wajib diisi.'
       });
     }
 
@@ -49,7 +49,7 @@ const createField = async (req, res) => {
     if (!validTypes.includes(type)) {
       return res.status(422).json({
         success: false,
-        message: `tipe lapangan harus salah satu dari: ${validTypes.join(', ')}`
+        message: `type harus salah satu dari: ${validTypes.join(', ')}`
       });
     }
 
@@ -78,7 +78,7 @@ const getSlots = async (req, res) => {
 
     const field = await FieldModel.findById(id);
     if (!field) {
-      return res.status(404).json({ success: false, message: 'Lapangan tidak dapat ditemukan.' });
+      return res.status(404).json({ success: false, message: 'Lapangan tidak ditemukan.' });
     }
 
     
@@ -95,7 +95,7 @@ const getSlots = async (req, res) => {
 const markUnavailable = async (req, res) => {
   try {
     await FieldModel.markSlotUnavailable(req.params.slot_id);
-    return res.status(200).json({ success: true, message: 'Slot yang anda ditandai tidak tersedia.' });
+    return res.status(200).json({ success: true, message: 'Slot ditandai tidak tersedia.' });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Server error.' });
   }
@@ -105,7 +105,7 @@ const markUnavailable = async (req, res) => {
 const markAvailable = async (req, res) => {
   try {
     await FieldModel.markSlotAvailable(req.params.slot_id);
-    return res.status(200).json({ success: true, message: 'Slot telah tersedia kembali.' });
+    return res.status(200).json({ success: true, message: 'Slot tersedia kembali.' });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Server error.' });
   }

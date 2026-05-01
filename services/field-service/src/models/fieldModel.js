@@ -2,6 +2,7 @@ const { pool } = require('../config/database');
 
 class FieldModel {
 
+  
   static async findAll({ page = 1, per_page = 10, type, search }) {
     const offset = (page - 1) * per_page;
     let where = 'WHERE f.is_active = 1';
@@ -31,6 +32,7 @@ class FieldModel {
       params
     );
     
+    // Handle both MySQL and SQLite return formats
     const countRows = Array.isArray(countResult) ? countResult[0] : countResult;
     const totalCount = Array.isArray(countRows) ? countRows[0].total : countRows.total;
 
@@ -73,6 +75,7 @@ class FieldModel {
     await pool.execute(`UPDATE fields SET ${fields.join(', ')} WHERE id = ?`, values);
   }
 
+  
   static async findSlots(field_id, date) {
     const [rows] = await pool.execute(
       `SELECT * FROM slots 
@@ -83,6 +86,7 @@ class FieldModel {
     return rows;
   }
 
+  
   static async markSlotUnavailable(slot_id) {
     await pool.execute(
       'UPDATE slots SET is_available = 0 WHERE id = ?',
@@ -90,7 +94,7 @@ class FieldModel {
     );
   }
 
-
+  
   static async markSlotAvailable(slot_id) {
     await pool.execute(
       'UPDATE slots SET is_available = 1 WHERE id = ?',
@@ -109,6 +113,7 @@ class FieldModel {
           [field_id, date, hours[i], hours[i+1]]
         );
       } catch (err) {
+        
       }
     }
   }

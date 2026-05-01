@@ -11,7 +11,7 @@ async function authMiddleware(req, res, next) {
   }
 
   try {
-    // Verifikasi token KE servis
+    // Verifikasi token ke auth-service
     const response = await axios.get(
       `${process.env.AUTH_SERVICE_URL}/auth/profile`,
       { headers: { Authorization: authHeader } }
