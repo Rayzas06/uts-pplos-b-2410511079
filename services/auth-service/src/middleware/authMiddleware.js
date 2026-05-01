@@ -6,7 +6,7 @@ function authMiddleware(req, res, next) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({
       success: false,
-      message: 'Token tidak dapat ditemukan. Diahrapkan agar user melakukan login terlebih dahulu.'
+      message: 'Token tidak ditemukan. Harap login terlebih dahulu.'
     });
   }
 
@@ -20,7 +20,7 @@ function authMiddleware(req, res, next) {
     if (err.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
-        message: 'Token telah kadaluarsa. Userharus login kembali untuk mendapatkan token baru.'
+        message: 'Token sudah kadaluarsa. Gunakan refresh token.'
       });
     }
     return res.status(403).json({

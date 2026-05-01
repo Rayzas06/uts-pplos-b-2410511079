@@ -22,7 +22,8 @@ function getRefreshExpiry() {
   return d;
 }
 
-
+// GET /auth/github 
+// ke halaman login GitHub
 const githubRedirect = (req, res) => {
   const params = new URLSearchParams({
     client_id:    process.env.GITHUB_CLIENT_ID,
@@ -32,7 +33,7 @@ const githubRedirect = (req, res) => {
   res.redirect(`https://github.com/login/oauth/authorize?${params}`);
 };
 
-x
+// GET /auth/github/callback 
 const githubCallback = async (req, res) => {
   try {
     const { code } = req.query;
@@ -64,10 +65,12 @@ const githubCallback = async (req, res) => {
       });
     }
 
+   
     const profileRes = await axios.get('https://api.github.com/user', {
       headers: { Authorization: `Bearer ${githubAccessToken}` }
     });
 
+   
     let email = profileRes.data.email;
     if (!email) {
       const emailRes = await axios.get('https://api.github.com/user/emails', {
@@ -84,6 +87,7 @@ const githubCallback = async (req, res) => {
       });
     }
 
+   
     const user = await UserModel.findOrCreateOAuth({
       name:           profileRes.data.name || profileRes.data.login,
       email,
@@ -92,10 +96,12 @@ const githubCallback = async (req, res) => {
       avatar_url:     profileRes.data.avatar_url,
     });
 
+   
     const accessToken  = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
     await UserModel.saveRefreshToken(user.id, refreshToken, getRefreshExpiry());
 
+    
     return res.status(200).json({
       success: true,
       message: 'Login dengan GitHub berhasil.',
@@ -115,7 +121,7 @@ const githubCallback = async (req, res) => {
     });
   } catch (err) {
     console.error('github callback error:', err.message);
-    return res.status(500).json({ success: false, message: 'Server error saat sedang melakukan proses OAuth.' });
+    return res.status(500).json({ success: false, message: 'Server error saat proses OAuth.' });
   }
 };
 

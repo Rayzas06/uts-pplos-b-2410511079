@@ -2,7 +2,7 @@ const bcrypt   = require('bcryptjs');
 const jwt      = require('jsonwebtoken');
 const UserModel = require('../models/userModel');
 
-// Untuk access token dengam waktu 15 menit
+// buat access token (15 menit)
 function generateAccessToken(user) {
   return jwt.sign(
     { id: user.id, email: user.email, name: user.name },
@@ -11,7 +11,7 @@ function generateAccessToken(user) {
   );
 }
 
-// Refresh token dengan waktu 7 hari
+// buat refresh token (7 hari)
 function generateRefreshToken(user) {
   return jwt.sign(
     { id: user.id },
@@ -20,34 +20,41 @@ function generateRefreshToken(user) {
   );
 }
 
-// Perhitungan tanggal token yaitu 7 hari dari user login
+// hitung tanggal expire 7 hari dari sekarang
 function getRefreshExpiry() {
   const d = new Date();
   d.setDate(d.getDate() + 7);
   return d;
 }
 
+// ── POST /auth/register 
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    console.log('[REGISTER] Start:', { name, email });
 
     // Validasi input
     if (!name || !email || !password) {
+      console.log('[REGISTER] Missing fields');
       return res.status(422).json({
         success: false,
         message: 'Nama, email, dan password wajib diisi.'
       });
     }
     if (password.length < 8) {
+      console.log('[REGISTER] Password too short');
       return res.status(422).json({
         success: false,
         message: 'Password minimal 8 karakter.'
       });
     }
 
+    // Cek email 
+    console.log('[REGISTER] Checking email...');
     let existing;
     try {
       existing = await UserModel.findByEmail(email);
+      console.log('[REGISTER] Email check done:', existing ? 'EXISTS' : 'NOT_EXISTS');
     } catch (dbErr) {
       console.error('Database error checking email:', dbErr.message);
       return res.status(500).json({ 
@@ -57,15 +64,19 @@ const register = async (req, res) => {
     }
 
     if (existing) {
+      console.log('[REGISTER] Email already exists');
       return res.status(409).json({
         success: false,
         message: 'Email sudah terdaftar.'
       });
     }
 
+    // Hash password
+    console.log('[REGISTER] Hashing password...');
     let password_hash;
     try {
       password_hash = await bcrypt.hash(password, 12);
+      console.log('[REGISTER] Password hashed');
     } catch (hashErr) {
       console.error('Hash error:', hashErr.message);
       return res.status(500).json({ 
@@ -74,9 +85,12 @@ const register = async (req, res) => {
       });
     }
 
+    // Simpan user
+    console.log('[REGISTER] Creating user...');
     let userId;
     try {
       userId = await UserModel.create({ name, email, password_hash });
+      console.log('[REGISTER] User created, ID:', userId);
     } catch (createErr) {
       console.error('Create user error:', createErr.message);
       return res.status(500).json({ 
@@ -85,6 +99,7 @@ const register = async (req, res) => {
       });
     }
 
+    console.log('[REGISTER] Sending response');
     return res.status(201).json({
       success: true,
       message: 'Registrasi berhasil.',
@@ -93,12 +108,12 @@ const register = async (req, res) => {
   } catch (err) {
     console.error('register error:', err);
     return res.status(500).json({ 
-      success: false, 
       message: 'Server error: ' + err.message 
     });
   }
 };
 
+// ── POST /auth/login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -126,9 +141,11 @@ const login = async (req, res) => {
       });
     }
 
+    // Buat token
     const accessToken  = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
+    // Simpan refresh token ke DB
     await UserModel.saveRefreshToken(user.id, refreshToken, getRefreshExpiry());
 
     return res.status(200).json({
@@ -138,7 +155,7 @@ const login = async (req, res) => {
         access_token:  accessToken,
         refresh_token: refreshToken,
         token_type:    'Bearer',
-        expires_in:    900 
+        expires_in:    900 // 15 menit dalam detik
       }
     });
   } catch (err) {
@@ -147,6 +164,7 @@ const login = async (req, res) => {
   }
 };
 
+// POST /auth/refresh 
 const refresh = async (req, res) => {
   try {
     const { refresh_token } = req.body;
@@ -158,16 +176,16 @@ const refresh = async (req, res) => {
       });
     }
 
-    
+    // Cek token di DB (belum dicabut & belum expire)
     const stored = await UserModel.findRefreshToken(refresh_token);
     if (!stored) {
       return res.status(401).json({
         success: false,
-        message: 'Refresh token yang anda masukkan sudah tidak valid atau sudah kadaluarsa.'
+        message: 'Refresh token tidak valid atau sudah kadaluarsa.'
       });
     }
 
-    
+    // Verifikasi signature
     let decoded;
     try {
       decoded = jwt.verify(refresh_token, process.env.REFRESH_SECRET);
@@ -180,9 +198,10 @@ const refresh = async (req, res) => {
 
     const user = await UserModel.findById(decoded.id);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User tidak dapat ditemukan.' });
+      return res.status(404).json({ success: false, message: 'User tidak ditemukan.' });
     }
 
+    // Cabut token lama, buat token baru
     await UserModel.revokeRefreshToken(refresh_token);
     const newAccessToken  = generateAccessToken(user);
     const newRefreshToken = generateRefreshToken(user);
@@ -203,6 +222,7 @@ const refresh = async (req, res) => {
   }
 };
 
+// POST /auth/logout 
 const logout = async (req, res) => {
   try {
     const { refresh_token } = req.body;
@@ -210,7 +230,7 @@ const logout = async (req, res) => {
     if (!refresh_token) {
       return res.status(422).json({
         success: false,
-        message: 'Refresh token wajib dikirim untuk kebutuhan proses logout.'
+        message: 'Refresh token wajib dikirim untuk logout.'
       });
     }
 
@@ -218,7 +238,7 @@ const logout = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Logout telah berhasil. Token telah dicabut.'
+      message: 'Logout berhasil. Token telah dicabut.'
     });
   } catch (err) {
     console.error('logout error:', err);
@@ -226,11 +246,12 @@ const logout = async (req, res) => {
   }
 };
 
+//GET /auth/profile 
 const profile = async (req, res) => {
   try {
     const user = await UserModel.findById(req.user.id);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User tidak dapat ditemukan.' });
+      return res.status(404).json({ success: false, message: 'User tidak ditemukan.' });
     }
     return res.status(200).json({ success: true, data: user });
   } catch (err) {
