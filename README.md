@@ -1,9 +1,13 @@
 UTS SE - Microservices API
 
 Nama    : Raymond Divian Nathaniel
+
 Kelas   : B
+
 NIM     : 2410511079 
+
 Link youtube: 
+
 Sistem reservasi lapangan olahraga berbasis microservices yang dibangun dengan Node.js (Express), Laravel, MySQL, dan API Gateway. Proyek ini menggunakan arsitektur microservices untuk meningkatkan skalabilitas, fleksibilitas, dan maintainability.
 
 
@@ -14,7 +18,7 @@ Bisa dilihat pada docs\ArsitekturProyek.png
 Layanan & Fungsinya
 
  1. API Gateway (Port 8000)
-- Fungsi: Menghubungkan semua service dan hanya bisa dipanggil melalui gateway
+    Fungsi: Menghubungkan semua service dan hanya bisa dipanggil melalui gateway
 - Tugas:
   - Routing request ke microservices yang sesuai
   - Validasi JWT token untuk request yang memerlukan auth
@@ -23,7 +27,7 @@ Layanan & Fungsinya
   - Health check untuk semua services
 
  2. Auth Service (Port 3001, Node.js)
-- Fungsi: Menangani autentikasi dan autorisasi
+  Fungsi: Menangani autentikasi dan autorisasi
 - Tugas:
   - User registration (membuat akun baru)
   - User login (generate JWT token)
@@ -34,7 +38,7 @@ Layanan & Fungsinya
   - Table: `users` (menyimpan data user dengan password terenkripsi)
 
  3. Field Service (Port 3002, Node.js)
-- Fungsi: Mengelola data lapangan olahraga
+  Fungsi: Mengelola data lapangan olahraga
 - Tugas:
   - List semua lapangan yang tersedia
   - Get detail lapangan tertentu
@@ -45,7 +49,7 @@ Layanan & Fungsinya
   - Table: `fields` (data lapangan: nama, tipe, lokasi, harga)
 
  4. Booking Service (Port 8080, Laravel)
-- Fungsi: Mengelola reservasi/pemesanan lapangan
+  Fungsi: Mengelola reservasi/pemesanan lapangan
 - Tugas:
   - List semua booking
   - Get detail booking tertentu
