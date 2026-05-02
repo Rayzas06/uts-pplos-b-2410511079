@@ -8,29 +8,7 @@ Sistem reservasi lapangan olahraga berbasis microservices yang dibangun dengan N
 
 
 Arsitektur Proyek
-
-
-┌─────────────────────────────────────────┐
-│         API Gateway (Port 8000)         │
-│  - Routing ke services                  │
-│  - Rate Limiting                        │
-│  - JWT Validation                       │
-└──────┬──────────────┬────────────────┬──┘
-       │              │                │
-       ▼              ▼                ▼
-┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-│ Auth Service │ │Field Service │ │BookingService│
-│ (Node.js)    │ │ (Node.js)    │ │  (Laravel)   │
-│ Port 3001    │ │ Port 3002    │ │  Port 8080   │
-└──────┬───────┘ └──────┬───────┘ └──────┬───────┘
-       │                │                │
-       ▼                ▼                ▼
-  ┌─────────┐      ┌─────────┐      ┌─────────┐
-  │Auth DB  │      │Field DB │      │Booking DB│
-  │(MySQL)  │      │(MySQL)  │      │(MySQL)   │
-  │ Port    │      │ Port    │      │ Port     │
-  │ 3307    │      │ 3308    │      │ 3309     │
-  └─────────┘      └─────────┘      └─────────┘
+Bisa dilihat pada docs\ArsitekturProyek.png
 
 
 Layanan & Fungsinya
@@ -146,7 +124,6 @@ npm run dev
 
 
  Langkah 4: Setup Booking Service (Laravel)
-
 Buka terminal baru:
 cd services/booking-service
 
@@ -163,7 +140,6 @@ php artisan serve --port=8080
 
 
  Langkah 5: Setup Gateway
-
 Buka terminal baru:
 cd gateway
 
@@ -204,55 +180,7 @@ Booking Endpoints (3)
 
 8. GET    /bookings               - List semua booking
 9. POST   /bookings               - Create booking baru (auth required)
-10. GET   /bookings/:id           - Get detail booking
-
-
-   
- Struktur File Penting
-
-
-uts-se/
-├── gateway/                   
-│   ├── server.js             
-│   ├── src/
-│   │   ├── middleware/        
-│   │   └── routes/            
-│   └── package.json
-│
-├── services/
-│   ├── auth-service/          
-│   │   ├── server.js
-│   │   ├── src/
-│   │   │   ├── controllers/   
-│   │   │   ├── models/        
-│   │   │   └── routes/        
-│   │   └── data/
-│   │       └── auth_db.json  
-│   │
-│   ├── field-service/         
-│   │   ├── server.js
-│   │   ├── src/
-│   │   │   ├── controllers/
-│   │   │   ├── models/
-│   │   │   └── routes/
-│   │   └── data/
-│   │       └── field_db.json
-│   │
-│   └── booking-service/       
-│       ├── app/
-│       │   ├── Http/Controllers/
-│       │   ├── Models/       
-│       │   └── Services/
-│       ├── routes/
-│       │   └── api.php        
-│       ├── database/
-│       │   └── migrations/    
-│       └── composer.json
-│
-├── postman/                
-│   └── UTS_SE_API_Collection.json
-│
-└── docker-compose.yml        
+10. GET   /bookings/:id           - Get detail booking       
 
  Security Features
 
