@@ -6,7 +6,7 @@ Kelas   : B
 
 NIM     : 2410511079 
 
-Link youtube: 
+Link youtube: https://www.youtube.com/watch?v=J-waORPVuWs&t=43s
 
 Sistem reservasi lapangan olahraga berbasis microservices yang dibangun dengan Node.js (Express), Laravel, MySQL, dan API Gateway. Proyek ini menggunakan arsitektur microservices untuk meningkatkan skalabilitas, fleksibilitas, dan maintainability.
 
@@ -14,7 +14,7 @@ Sistem reservasi lapangan olahraga berbasis microservices yang dibangun dengan N
 Arsitektur Proyek
 Bisa dilihat pada docs\ArsitekturProyek.png
 
-
+---
 Layanan & Fungsinya
 
  1. API Gateway (Port 8000)
@@ -62,9 +62,7 @@ Layanan & Fungsinya
     - `bookings` - data pemesanan
     - `booking_slots` - slot waktu yang tersedia
 
-
-
-
+---
 Database
 
 Proyek menggunakan 3 database terpisah (Database per Service Pattern):
@@ -81,7 +79,7 @@ Keuntungan Database Terpisah:
 -  Technology flexibility (bisa gunakan DB berbeda per service)
 -  Failure isolation (error di satu DB tidak affect services lain)
 
-
+---
  Cara Menjalankan Proyek
 
  Prasyarat
@@ -156,7 +154,7 @@ npm run dev
  Expected output: API Gateway berjalan di port 8000
 
 
-Pastikan semua 4 terminal berjalan dan tidak ada error!
+Pastikan semua 4 terminal berjalan dan tidak error
 
 ---
  Testing API (10 Endpoints)
@@ -184,7 +182,12 @@ Booking Endpoints (3)
 
 8. GET    /bookings               - List semua booking
 9. POST   /bookings               - Create booking baru (auth required)
-10. GET   /bookings/:id           - Get detail booking       
+10. GET   /bookings/:id           - Get detail booking
+11. PUT   /booking/:bookingid     - reschedule booking
+12. DELETE /api/booking/bookingid - cancel booking
+
+---
+       
 
  Security Features
 
